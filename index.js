@@ -1,9 +1,19 @@
+
+require('dotenv').config(); 
+
 const express = require("express");
 const admin = require("firebase-admin");
 const app = express();
-const port = 5000;
+const PORT = process.env.PORT || 5000; 
 
-const serviceAccount = require("./serviceAccountKey.json");
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+} catch (error) {
+  console.error("Error al cargar o parsear FIREBASE_SERVICE_ACCOUNT_KEY:", error);
+  // Es crítico, así que salimos si no podemos cargar las credenciales
+  process.exit(1);
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -37,6 +47,6 @@ app.get("/get-role/:uid", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`✅ Backend corriendo en http://localhost:${port}`);
+app.listen(PORT, () => { // <-- Paso 5: Usa la nueva variable PORT aquí
+  console.log(`✅ Backend corriendo en http://localhost:${PORT}`);
 });
